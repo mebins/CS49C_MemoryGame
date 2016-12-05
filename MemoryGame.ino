@@ -11,7 +11,7 @@ int buttonStates[3] = {0};
 const int BUZZER = 10;
 const int NOISEPIN = A3;
 const int SOUNDFREQUENCIES[] = {200, 240, 255};
-
+const int MEMORYADDRESS = 256;
 enum GAMESTATE {LOST, START, CONTINUE};
 GAMESTATE gamestate;
 int level;
@@ -21,9 +21,10 @@ boolean pressed;
 
 int pattern[SIZE];
 int index;
-
+int highscore;
 
 void setup() {
+  highscore = EEPROM.read(MEMORYADDRESS);
   randomSeed(analogRead(NOISEPIN));
   Serial.begin(9600);
   pressed = false;
@@ -44,7 +45,7 @@ void loop() {
     {
       pattern[i] = (int)random(3);
     }
-    
+
     level = 0;
     index = 0;
     lightUp(0);
@@ -120,7 +121,8 @@ void loop() {
   }
   else if (gamestate == LOST)
   {
-      gamestate = START;
+    if(highscore < level+1) EEPROM.write(MEMORYADDRESS,level+1);
+    gamestate = START;
   }
 }
 
