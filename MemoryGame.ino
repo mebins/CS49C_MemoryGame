@@ -1,7 +1,7 @@
 #include <EEPROM.h>
 //prototypes
-void lightUp(int LED);
-boolean checker(int input, int index);
+void lightUp(const int LED);
+boolean checker(const int input, const int index);
 void playPattern();
 
 //Declerations
@@ -128,7 +128,7 @@ void loop() {
   }
 }
 
-void lightUp(int LED)
+void lightUp(const int LED)
 {
   for (int i = 0; i < 3; i++)
   {
