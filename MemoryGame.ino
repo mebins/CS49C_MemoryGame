@@ -1,3 +1,4 @@
+#include <EEPROM.h>
 //prototypes
 void lightUp(int LED);
 boolean checker(int input, int index);
@@ -116,6 +117,7 @@ void loop() {
     if (index > level)
     {
       level++;
+      if(level > SIZE-1) gamestate = START;
       index = 0;
     }
   }
