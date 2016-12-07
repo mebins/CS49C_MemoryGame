@@ -1,7 +1,7 @@
 #include <EEPROM.h>
 //prototypes
-void lightUp(int LED);
-boolean checker(int input, int index);
+void lightUp(const int LED);
+boolean checker(const int input, const int index);
 void playPattern();
 
 //Declerations
@@ -21,9 +21,9 @@ enum GAMESTATE {LOST, START, CONTINUE};
 GAMESTATE gamestate;
 int level;
 struct board arduino;
-int leds[3] = {13, 12, 11};
-int pushbuttons[3] = {A0, A1, A2};
-int sndFrequencys[3] = {200, 240, 255};
+const int leds[3] = {13, 12, 11};
+const int pushbuttons[3] = {A0, A1, A2};
+const int sndFrequencys[3] = {200, 240, 255};
 
 boolean pressed;
 int pattern[SIZE];
@@ -140,7 +140,7 @@ void loop() {
   }
 }
 
-void lightUp(int LED)
+void lightUp(const int LED)
 {
   for (int i = 0; i < 3; i++)
   {
