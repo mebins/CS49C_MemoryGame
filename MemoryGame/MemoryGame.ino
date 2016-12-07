@@ -21,17 +21,11 @@ enum GAMESTATE {LOST, START, CONTINUE};
 GAMESTATE gamestate;
 int level;
 struct board arduino;
-
 int leds[3] = {13, 12, 11};
-
 int pushbuttons[3] = {A0, A1, A2};
-
 int sndFrequencys[3] = {200, 240, 255};
 
-
-
 boolean pressed;
-
 int pattern[SIZE];
 int index;
 int highscore;
