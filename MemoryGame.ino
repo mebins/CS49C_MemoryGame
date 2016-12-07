@@ -1,6 +1,7 @@
 #include <EEPROM.h>
 //prototypes
 void lightUp(const int LED);
+void levelUp();
 boolean checker(const int input, const int index);
 void playPattern();
 
