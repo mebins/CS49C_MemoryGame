@@ -1,22 +1,33 @@
 #include <EEPROM.h>
 //prototypes
-void lightUp(const int LED);
-void levelUp();
-boolean checker(const int input, const int index);
+void lightUp(int LED);
+boolean checker(int input, int index);
 void playPattern();
 
 //Declerations
 #define SIZE 100
-const int LEDS[] = {13, 12, 11};
-const int PUSHBUTTONS[] = {A0, A1, A2};
+
+struct board {
+  int BUZZER;
+  int * LEDS;
+  int * PUSHBUTTONS;
+  int * SOUNDFREQUENCIES;
+  int NOISEPIN;
+};
+
 int buttonStates[3] = {0};
-const int BUZZER = 10;
-const int NOISEPIN = A3;
-const int SOUNDFREQUENCIES[] = {200, 240, 255};
 const int MEMORYADDRESS = 256;
 enum GAMESTATE {LOST, START, CONTINUE};
 GAMESTATE gamestate;
 int level;
+struct board arduino;
+
+int leds[3] = {13, 12, 11};
+
+int pushbuttons[3] = {A0, A1, A2};
+
+int sndFrequencys[3] = {200, 240, 255};
+
 
 
 boolean pressed;
@@ -26,16 +37,20 @@ int index;
 int highscore;
 
 void setup() {
-  highscore = EEPROM.read(MEMORYADDRESS);
-  randomSeed(analogRead(NOISEPIN));
+  arduino.LEDS = leds;
+  arduino.BUZZER = 10;
+  arduino.PUSHBUTTONS = pushbuttons;
+  arduino.SOUNDFREQUENCIES = sndFrequencys;
+  arduino.NOISEPIN = A3;
+  randomSeed(analogRead(arduino.NOISEPIN));
   Serial.begin(9600);
   pressed = false;
   gamestate = START;
   // put your setup code here, to run once:
   for (int i = 0; i < 3; i++)
   {
-    pinMode(LEDS[i], OUTPUT);
-    pinMode(PUSHBUTTONS[i], INPUT);
+    pinMode(arduino.LEDS[i], OUTPUT);
+    pinMode(arduino.PUSHBUTTONS[i], INPUT);
   }
 }
 
@@ -43,6 +58,9 @@ void loop() {
   // put your main code here, to run repeatedly:
   if (gamestate == START)
   {
+    Serial.print("HighScore: ");
+    Serial.println(highscore = EEPROM.read(MEMORYADDRESS));
+
     for (int i = 0; i < SIZE; i++)
     {
       pattern[i] = (int)random(3);
@@ -69,7 +87,7 @@ void loop() {
     Serial.println(index);
     while (index <= level && gamestate == CONTINUE)
     {
-      while ((buttonStates[0] = digitalRead(PUSHBUTTONS[0])) == LOW && (buttonStates[1] = digitalRead(PUSHBUTTONS[1])) == LOW && (buttonStates[2] = digitalRead(PUSHBUTTONS[2])) == LOW)
+      while ((buttonStates[0] = digitalRead(arduino.PUSHBUTTONS[0])) == LOW && (buttonStates[1] = digitalRead(arduino.PUSHBUTTONS[1])) == LOW && (buttonStates[2] = digitalRead(arduino.PUSHBUTTONS[2])) == LOW)
       {
         pressed = false;
       }
@@ -118,35 +136,34 @@ void loop() {
     if (index > level)
     {
       level++;
-      if(level > SIZE-1) gamestate = START;
       index = 0;
     }
   }
   else if (gamestate == LOST)
   {
-    if(highscore < level+1) EEPROM.write(MEMORYADDRESS,level+1);
+    if (highscore < level + 1) EEPROM.write(MEMORYADDRESS, level + 1);
     gamestate = START;
   }
 }
 
-void lightUp(const int LED)
+void lightUp(int LED)
 {
   for (int i = 0; i < 3; i++)
   {
     if (i != LED)
     {
-      digitalWrite(LEDS[i], LOW);
+      digitalWrite(arduino.LEDS[i], LOW);
     }
     else
     {
-      digitalWrite(LEDS[i], HIGH);
-      tone(BUZZER, SOUNDFREQUENCIES[i], 250);
+      digitalWrite(arduino.LEDS[i], HIGH);
+      tone(arduino.BUZZER, arduino.SOUNDFREQUENCIES[i], 250);
     }
   }
   delay(250);
   for (int i = 0; i < 3; i++)
   {
-    digitalWrite(LEDS[i], LOW);
+    digitalWrite(arduino.LEDS[i], LOW);
   }
   delay(250);
 }
@@ -155,12 +172,12 @@ void levelUp()
 {
   for (int i = 0; i < 3; i++)
   {
-    digitalWrite(LEDS[i], HIGH);
+    digitalWrite(arduino.LEDS[i], HIGH);
   }
   delay(250);
   for (int i = 0; i < 3; i++)
   {
-    digitalWrite(LEDS[i], LOW);
+    digitalWrite(arduino.LEDS[i], LOW);
   }
   delay(250);
 }
@@ -180,4 +197,3 @@ boolean checker(const int input, const int index)
   }
   return false;
 }
-
